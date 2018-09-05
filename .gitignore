@@ -1,0 +1,12 @@
+# Latex junk
+*.txt
+*.aux
+*.fls
+*.log
+*.out
+*.pyg
+*.toc
+
+# Latexrun
+latex.out
+latexrun
