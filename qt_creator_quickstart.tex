@@ -65,7 +65,7 @@ In order to get Qt Creator up and running as an IDE, there are a few requirement
 \begin{itemize}
     \item \textbf{Qt}. The Qt core package containing the core functionality and libraries used by Qt Creator. Contains the kits needed to compile and build projects, as well as libraries for building e.g. \href{http://doc.qt.io/qt-5/ios-support.html}{Android and iPhone apps}.
     \item \textbf{Qt Creator}. The IDE used for programming.
-    \item \textbf{A \CC compiler}. Needed in order to compile \CC files in Qt Creator. The specific compiler needed depend on the OS.
+    \item \textbf{A \CC compiler}. Needed in order to compile \CC  files in Qt Creator. The specific compiler needed depend on the OS.
 \end{itemize}
 
 \textbf{NOTE:} it is possible to update your Qt platform after installing it through the Qt Maintenance tool in case you are missing any of the Qt utilities, such as a proper Qt version. 
@@ -260,7 +260,7 @@ After introducing the \texttt{.pro} file, we can look at how libraries is includ
 \begin{itemize}
     \item \textbf{Mac}. To include Armadillo on Mac in Qt Creator, you have to add following to your \texttt{.pro} file. This is assuming Brew linked Armadillo correctly and installed all dependencies.
     \begin{lstlisting}
-        INCLUDEPATH += /usr/local/Cellar/armadillo/7.700.0_1/include
+        INCLUDEPATH += /usr/local/include
         LIBS += -L/usr/local/lib -llapack -lblas -larmadillo
     \end{lstlisting}
     The path was used here is the path provided by Brew when typing 
@@ -276,6 +276,26 @@ After introducing the \texttt{.pro} file, we can look at how libraries is includ
     \item \textbf{Windows}. See post on Piazza or go to the bottom of the same document listed in under the installation of Armadillo.
 \end{itemize}
 To include Armadillo in your \CC program, go to your \texttt{.pro} file and add the following,
+
+An example of a full \texttt{.pro} file would be
+\begin{lstlisting}
+TEMPLATE = app
+CONFIG += console c++11
+CONFIG -= app_bundle
+CONFIG -= qt
+
+SOURCES += \
+    main.cpp
+
+INCLUDEPATH += /usr/local/include
+LIBS += -L/usr/local/lib 
+LIBS += -llapack -lblas -larmadillo
+\end{lstlisting}
+
+\subsubsection{Troubleshooting}
+\begin{itemize}
+    \item \textbf{Mac}. If you run into an issue where you get \texttt{Image not found} at run time, try to reinstall \texttt{arpack} and Armadillo with brew. 
+\end{itemize}
 
 \subsection{OpenMP}
 
