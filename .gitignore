@@ -1,3 +1,6 @@
+# MacOS junk
+.DS_Store
+
 # Latex junk
 *.txt
 *.aux
