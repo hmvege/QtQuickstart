@@ -321,6 +321,58 @@ $ brew install valgrind
 % -g generates debug information
 % 
 
+% A more detailed guide will come up later this day or early tomorrow.
+
+% Current files are used for a short presentation in group sessions.
+% Introduction
+% This guide will show you how to profile your code in two ways:
+% Memory profiling. Will check if any memory is lost. I.e. you forget to de-allocate any memory.
+% Function profiling. Will check the time spent in each function.
+
+% Installation
+% Mac:
+% Install Valgrind with Brew,
+% brew install valgrind
+% If you have MacOS High Sierra, you might need to install with the flag --head.
+
+% If you do not use Qt Creator and want to view your function profiling results, you can download QCacheGrind via Brew,
+% brew install qcachegrind
+% Ubuntu:
+% sudo apt-get install valgrind
+% sudo apt-get install kcachegrind
+
+% Running Valgrind memory check in Qt Creator
+% In Qt Creator, first compile your program in debug mode. Then select Analyze -> Valgrind Memory Analyzer with GDB. If the drop-down panel is something else than Debugger click it and select memcheck. If it does not start, click Run.
+
+% The output will then on the shape of
+
+
+% Running Valgrind memory check in terminal
+% If you want to run in terminal, make sure you have compiled you program in debug mode(not required), and type following 
+% valgrind --leak_check=full ./my_executable
+% The argument --leak_check=full prompts Valgrind to ouput a detailed overview of the locations of where it detected memory leaks.
+
+% Mac users: Valgrind may display many leaks which are related to the OS, and thus can be discarded.
+
+% Profiling your functions with Valgrind(Callgrind)
+% Qt Creator
+% If Qt Creator, you select Analyze -> Valgrind Function Profiler. Qt Creator should now be profiling your code for you. You result should look something like this:
+
+
+
+% The rightmost column, Incl. Cost: Ir at the lower half shows the total cost of the given function + all other functions called from it. Self Cost: Ir is the cost of the specific function. If you click a function, you will see what other functions is called from it.
+
+% Callgrind from terminal
+% To run a Callgrind in terminal, use
+% valgrind --tool=callgrind ./my_executable
+
+% This produces an output on the format of callgrind.out.61232. The last numbers is just the pid. To view this, use depending on OS,
+% Mac: 
+% qcachegrind callgrind.out.<pid>
+% Ubuntu:  
+% kcachegrind callgrind.out.<pid>
+
+
 To view output from the Valgrind memory analyzer, use QCacheGrind which can be installed via brew,
 \begin{lstlisting}
 $ brew install qcachegrind

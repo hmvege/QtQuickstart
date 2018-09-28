@@ -10,7 +10,10 @@
 *.pyg
 *.toc
 
+# Binaries
+build*
+
 # Latexrun
 latex.out
 latexrun
-*.user
+*pro.user

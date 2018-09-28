@@ -14,7 +14,8 @@ double addNumber(const double a, const double b);
 
 int main()
 {
-    randomNumberOperations((unsigned int) pow(10,4));
+    unsigned int array_size = (unsigned int) pow(10,4);
+    randomNumberOperations(array_size);
     return 0;
 }
 
