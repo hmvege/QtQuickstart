@@ -251,8 +251,6 @@ After introducing the \texttt{.pro} file, we can look at how libraries is includ
     in the terminal.
     \item \textbf{Ubuntu}. To install Armadillo on Ubuntu, use
     \begin{lstlisting}
-        $ sudo apt-get install liblapack-dev
-        $ sudo apt-get install libblas-dev
         $ sudo apt-get install libarmadillo-dev
     \end{lstlisting}
 \end{itemize}
@@ -298,14 +296,59 @@ LIBS += -llapack -lblas -larmadillo
 \end{itemize}
 
 \subsection{OpenMP}
+OpenMP is a method of parallelizing code.
 
 \subsection{MPI}
 
 \section{Profiling your code}
+Methods for profiling code can be found at Qt Wiki for \href{https://wiki.qt.io/Profiling_and_Memory_Checking_Tools}{Profiling and Memory Checking Tools}.
+
+To view output of the Valgrind profiler, use KCacheGrind which can be found \href{https://github.com/KDE/kcachegrind}{here}.
+
+For Mac, you might want to try out 
+\subsection{Installing Valgrind}
+\subsubsection{Mac}
+Install Valgrind with brew,
+\begin{lstlisting}
+$ brew install valgrind
+\end{lstlisting}
+
+
+\subsubsection{Ubuntu}
+\subsubsection{Windows}
+\subsection{Installing K/QCachegrind}
+
+% -g generates debug information
+% 
+
+To view output from the Valgrind memory analyzer, use QCacheGrind which can be installed via brew,
+\begin{lstlisting}
+$ brew install qcachegrind
+\end{lstlisting}
 
 \subsection{Valgrind Memory profiler}
+\subsubsection{Mac}
+\subsubsection{Linux}
+
 
 \subsection{Valgrind Function profiler}
+\subsubsection{Mac}
+\subsubsection{Linux}
+
+\subsection{Troubleshooting}
+\subsubsection{Mac}
+If you have a later Mac update(10.13>), you might get the following error:
+\begin{lstlisting}
+valgrind: mmap-FIXED(0x7fff5f400000, 8388608) failed in UME (load_unixthread1) with error 22 (Invalid argument).
+\end{lstlisting}
+The fix is to uninstall Valgrind and reinstall with the \texttt{--HEAD}.
+\begin{lstlisting}
+$ brew uninstall valgrind
+$ brew install valgrind --HEAD
+\end{lstlisting}
+
+\section{Optimizing your code}
+By including \texttt{-march-native} you allow for processor specific compilation. \texttt{-O3} you will allow get vectorization enabled, together with the optimizations from \texttt{-O2}, \texttt{-O1}, \texttt{-OFast}. With \texttt{-fopt-info} you will see what compiler optimizations is performed.
 
 
 \end{document}
