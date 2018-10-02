@@ -301,95 +301,23 @@ OpenMP is a method of parallelizing code.
 \subsection{MPI}
 
 \section{Profiling your code}
-Methods for profiling code can be found at Qt Wiki for \href{https://wiki.qt.io/Profiling_and_Memory_Checking_Tools}{Profiling and Memory Checking Tools}.
+Two profiling methods will be presented in this section,
+\begin{itemize}
+    \item \textit{Memory profiling}. Will check if any memory is lost. I.e. you forget to de-allocate any memory.
+    \item \textit{Function profiling}. Will check the time spent in each function.
+\end{itemize}
 
-To view output of the Valgrind profiler, use KCacheGrind which can be found \href{https://github.com/KDE/kcachegrind}{here}.
+Methods for profiling code can be found at Qt Wiki for \href{https://wiki.qt.io/Profiling_and_Memory_Checking_Tools}{Profiling and Memory Checking Tools}. Here, we will present Valgrind as the choice of profiler.
 
-For Mac, you might want to try out 
+To view output of the Valgrind profiler(in case you do not use Qt Creator), use KCacheGrind(or QCacheGrind for Mac users) which can be found \href{https://github.com/KDE/kcachegrind}{here}.
+
 \subsection{Installing Valgrind}
 \subsubsection{Mac}
 Install Valgrind with brew,
 \begin{lstlisting}
 $ brew install valgrind
 \end{lstlisting}
-
-
-\subsubsection{Ubuntu}
-\subsubsection{Windows}
-\subsection{Installing K/QCachegrind}
-
-% -g generates debug information
-% 
-
-% A more detailed guide will come up later this day or early tomorrow.
-
-% Current files are used for a short presentation in group sessions.
-% Introduction
-% This guide will show you how to profile your code in two ways:
-% Memory profiling. Will check if any memory is lost. I.e. you forget to de-allocate any memory.
-% Function profiling. Will check the time spent in each function.
-
-% Installation
-% Mac:
-% Install Valgrind with Brew,
-% brew install valgrind
-% If you have MacOS High Sierra, you might need to install with the flag --head.
-
-% If you do not use Qt Creator and want to view your function profiling results, you can download QCacheGrind via Brew,
-% brew install qcachegrind
-% Ubuntu:
-% sudo apt-get install valgrind
-% sudo apt-get install kcachegrind
-
-% Running Valgrind memory check in Qt Creator
-% In Qt Creator, first compile your program in debug mode. Then select Analyze -> Valgrind Memory Analyzer with GDB. If the drop-down panel is something else than Debugger click it and select memcheck. If it does not start, click Run.
-
-% The output will then on the shape of
-
-
-% Running Valgrind memory check in terminal
-% If you want to run in terminal, make sure you have compiled you program in debug mode(not required), and type following 
-% valgrind --leak_check=full ./my_executable
-% The argument --leak_check=full prompts Valgrind to ouput a detailed overview of the locations of where it detected memory leaks.
-
-% Mac users: Valgrind may display many leaks which are related to the OS, and thus can be discarded.
-
-% Profiling your functions with Valgrind(Callgrind)
-% Qt Creator
-% If Qt Creator, you select Analyze -> Valgrind Function Profiler. Qt Creator should now be profiling your code for you. You result should look something like this:
-
-
-
-% The rightmost column, Incl. Cost: Ir at the lower half shows the total cost of the given function + all other functions called from it. Self Cost: Ir is the cost of the specific function. If you click a function, you will see what other functions is called from it.
-
-% Callgrind from terminal
-% To run a Callgrind in terminal, use
-% valgrind --tool=callgrind ./my_executable
-
-% This produces an output on the format of callgrind.out.61232. The last numbers is just the pid. To view this, use depending on OS,
-% Mac: 
-% qcachegrind callgrind.out.<pid>
-% Ubuntu:  
-% kcachegrind callgrind.out.<pid>
-
-
-To view output from the Valgrind memory analyzer, use QCacheGrind which can be installed via brew,
-\begin{lstlisting}
-$ brew install qcachegrind
-\end{lstlisting}
-
-\subsection{Valgrind Memory profiler}
-\subsubsection{Mac}
-\subsubsection{Linux}
-
-
-\subsection{Valgrind Function profiler}
-\subsubsection{Mac}
-\subsubsection{Linux}
-
-\subsection{Troubleshooting}
-\subsubsection{Mac}
-If you have a later Mac update(10.13>), you might get the following error:
+If you use MacOS High Sierra(> 10.13), you might get an error on the form of,
 \begin{lstlisting}
 valgrind: mmap-FIXED(0x7fff5f400000, 8388608) failed in UME (load_unixthread1) with error 22 (Invalid argument).
 \end{lstlisting}
@@ -399,8 +327,74 @@ $ brew uninstall valgrind
 $ brew install valgrind --HEAD
 \end{lstlisting}
 
+\subsubsection{Ubuntu}
+Simple use
+\begin{lstlisting}
+$ sudo apt-get install valgrind
+\end{lstlisting}
+and you should have it.
+
+\subsection{Installing K/QCachegrind}
+\subsubsection{Mac}
+\begin{lstlisting}
+$ brew install kcachegrind
+\end{lstlisting}
+
+\subsubsection{Ubuntu}
+\begin{lstlisting}
+$ sudo apt-get install kcachegrind
+\end{lstlisting}
+
+\subsection{Running Valgrind memory check(memcheck)}
+\subsubsection{Qt Creator}
+In Qt Creator, first compile your program in debug mode. Then select Analyze -> Valgrind Memory Analyzer with GDB. If the drop-down panel is something else than Debugger click it and select memcheck. If it does not start, click Run.
+
+The output will then on the shape of
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/valgrind-qt/valgrind}
+\end{figure}
+
+\subsubsection{Terminal}
+If you want to run in terminal, you might want to have your program compiled in debug mode(not required though), and type following 
+\begin{lstlisting}
+$ valgrind --leak_check=full ./my_executable
+\end{lstlisting}
+The argument \verb|--leak_check=full| prompts Valgrind to output a detailed overview of the locations of where it detected memory leaks.
+
+Mac users: Valgrind may display many leaks which are related to the OS, and thus can be discarded.
+
+\subsection{Profiling with Valgrind(Callgrind)}
+\subsubsection{Qt Creator}
+If Qt Creator, you select Analyze $\rightarrow$ Valgrind Function Profiler. Qt Creator should now be profiling your code for you. You result should look something like this:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/valgrind-qt/callgrind}
+\end{figure}
+
+\subsubsection{Terminal}
+To run a Callgrind in terminal, use
+\begin{lstlisting}
+$ valgrind --tool=callgrind ./my_executable
+\end{lstlisting}
+
+This produces an output on the format of \texttt{callgrind.out.<pid>}. The last numbers is just the Process identifier. To view this file (depending on OS), use,
+\textit{Mac}:
+\begin{lstlisting}
+$ qcachegrind callgrind.out.<pid>
+\end{lstlisting}
+\textit{Ubuntu}:
+\begin{lstlisting}
+$ kcachegrind callgrind.out.<pid>
+\end{lstlisting}
+
+
 \section{Optimizing your code}
-By including \texttt{-march-native} you allow for processor specific compilation. \texttt{-O3} you will allow get vectorization enabled, together with the optimizations from \texttt{-O2}, \texttt{-O1}, \texttt{-OFast}. With \texttt{-fopt-info} you will see what compiler optimizations is performed.
+By including \texttt{-march-native} you allow for processor specific compilation.
+
+\texttt{-O3} you will allow get vectorization enabled, together with the optimizations from \texttt{-O2}, \texttt{-O1}, \texttt{-OFast}. 
+
+With \texttt{-fopt-info} you will see what compiler optimizations is performed.
 
 
 \end{document}
