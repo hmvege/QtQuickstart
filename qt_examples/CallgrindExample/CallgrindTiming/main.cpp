@@ -24,14 +24,14 @@ void randomNumberOperations(const unsigned int N) {
      * This function is a slow function.
      */
 
+    // Allocating some memory
     double *VecRand1 = new double[N];
     double *VecRand2 = new double[N];
     double *VecSum = new double[N];
 
     printf("Filling arrays...\n");
-//    fillArraysWithRandomNumbers(VecRand1, VecRand2, N);
-    fillArray(VecRand1, 21, N);
-    fillArray(VecRand2, 21, N);
+    fillArraysWithRandomNumbers(VecRand1, N);
+    fillArray(VecRand2, 0, N);
 
     printf("Adding arrays...\n");
     addArrays(VecRand1, VecRand2, VecSum, N);
@@ -41,20 +41,23 @@ void randomNumberOperations(const unsigned int N) {
 
     delete [] VecRand1;
     delete [] VecRand2;
-//    delete [] VecSum;
+//    delete [] VecSum; // Not de-allocating! Should give use that 10000*8 bytes is lost!
 
     printf("Memory deallocated...?\n");
 }
 
 
-void fillArray(double *A, double a, const unsigned int N) {
+void fillArray(double *A, const double a, const unsigned int N) {
+    /*Fills an array of given size*/
     for (unsigned int i = 0; i < N; i++) {
-        double * x = new double[10];
+
+        // double * x = new double[10]; // Bad leak.
+
         A[i] = a;
     }
 }
 
-void fillArraysWithRandomNumbers(double *A, double *B, const unsigned int N, unsigned long long rseed) {
+void fillArraysWithRandomNumbers(double *A, const unsigned int N, const unsigned long long rseed) {
     /*
      * Function for filling two arrays with ranadom numbers
      */
@@ -66,7 +69,6 @@ void fillArraysWithRandomNumbers(double *A, double *B, const unsigned int N, uns
     // Generate bunch of random numbers in two arrays
     for (unsigned int i = 0; i < N; i++) {
         A[i] = uniformDistribution(randomGenerator);
-        B[i] = uniformDistribution(randomGenerator);
     }
 }
 
@@ -94,5 +96,5 @@ double addNumber(const double a, const double b) {
 
 double cuber(const double a) {
     /* Really silly function for cubing a number. */
-    return pow(a, 3);
+    return pow(a, 3); // Pow() is always quite slow, so should in general avoid it for repetative tasks.
 }
