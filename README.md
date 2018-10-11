@@ -7,7 +7,7 @@ The ´qt_examples´ contains examples on:
 * Object Orientation usage
 
 
-Written for FYS3150/4150: Computational Physics
+Written for [FYS3150/4150: Computational Physics](https://github.com/CompPhysics/ComputationalPhysics)
 
 ---
 
