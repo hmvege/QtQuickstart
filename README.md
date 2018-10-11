@@ -1,7 +1,5 @@
 # Qt Quickstart
 
----
-
 A small guide to getting started with Qt Creator.
 
 The ´qt_examples´ contains examples on:
@@ -10,6 +8,8 @@ The ´qt_examples´ contains examples on:
 
 
 Written for FYS3150/4150: Computational Physics
+
+---
 
 TODO:
 - [] Add a basic shell solar system object orientation.
