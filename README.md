@@ -2,7 +2,7 @@
 
 A small guide to getting started with Qt Creator.
 
-The ´qt_examples´ contains examples on:
+The `qt_examples` contains examples on:
 * Vallgrind usage
 * Object Orientation usage
 
