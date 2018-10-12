@@ -11,17 +11,12 @@ using std::endl;
 
 int main()
 {
-    // Some basic operations...
-    vec3 v1(1,1,1);
-    vec3 v2(2,2,2);
+    // Testing some basic vec3 operations
+    vec3 v1(1,2,3), v2(3,2,1);
+    v1 += v2;
     v1.print();
-    v2.print();
-    vec3 v3, v4;
-    v3 = v1;
-    v3.print();
-    v4 = v1 + v2 - v3;
-    v4.print();
 
+    exit(1); // Try to run some basic vec3 operations before continuing!
 
     // Project begins here
     // Initializes sun, earth, jupiter
@@ -37,12 +32,12 @@ int main()
     vec3 posJupiter(0,0,0);
     vec3 velJupiter(0,0,0);
 
+    // Creates new CelestialBody objects for sun, earth and jupiter
     CelestialBody *sun = new CelestialBody(posSun, velSun, massSun, "sun");
-    CelestialBody *earth = new CelestialBody(posEarth, velEarth, massEarth, "earth");
-    CelestialBody *jupiter = new CelestialBody(posJupiter, velJupiter, massJupiter, "jupiter");
+    // Add earth here!!
 
     // Specifies the number of steps, time to run for and step size
-    unsigned long NSteps = 100;
+    int NSteps = 100;
     double T = 1; // Time, years
     double h = T / double(NSteps);
     double G = 4*M_PI*M_PI;
@@ -52,12 +47,15 @@ int main()
     NewtonianGravity force(G, massSun);
 
     S.addObject(sun);
-    S.addObject(earth);
-//    S.addObject(jupiter); // First verify that the 2-body problem produces the correct results
+    S.addObject(earth); 
+
+    // First verify that the 2-body problem produces the 
+    // correct results before moving on with the three body problems
+    // S.addObject(jupiter); 
 
     cout << "Number of bodies in the solar system is: " << S.bodies.size() << endl;
 
-    // Prints start position
+    // Prints start position of Earth
     S.bodies[1]->printObject();
 
     for (int iStep = 0; iStep < NSteps; iStep++)
@@ -66,16 +64,10 @@ int main()
         force.calculateForces(&S);
         integrator.integrate(&S, h);
 
-        for (int iObj = 0; iObj < S.bodies.size(); iObj++)
-        {
-            S.bodies[iObj]->printObject();
-        }
-
     }
 
-    // Prints end position, which should be approximately the same as the start
+    // Prints end position of Earth, which should be approximately the same as the start
     S.bodies[1]->printObject();
-
 
     return 0;
 }

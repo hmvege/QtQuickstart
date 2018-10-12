@@ -12,7 +12,6 @@ class vec3
 {
 private:
     double v[3];
-//    double *v;
 
 public:
     vec3(); // Default constructor
@@ -30,35 +29,35 @@ public:
     // Printing functions
     void print();
 
-    // Setters
+    // Setters, a way of updating private class variables
     void setXYZ(double x, double y, double z) {
         v[0] = x;
         v[1] = y;
         v[2] = z;
     }
 
-    // Getters
-    double x() const { return v[0]; }
+    // Getters, a way of getting private class variables
+    double x() const { return v[0]; } // Const means that you cannot use the returns value to modify the object.
+    // Add one for y() and z()
 
+    // Missing a way of taking the length of a vector
 
-    // Length
 
     // Operator overloading
-    double &operator[](int index) { return v[index]; }
+    double &operator[](int index) { return v[index]; } // Allows retrieving components like vec[i]
 
-    // IMPLEMENT MORE OPERATORS HERE
-    vec3 &operator+=(const vec3 &other);
+    // Overloading method for adding vectors
+    vec3 &operator+=(const vec3 &other); // This allows c += a
 
-    // A cout << foo overload method.
-    friend std::ostream &operator<<(std::ostream &os, const vec3 &a) {
-        os << "[" << a.v[0] << ", " << a.v[1] << ", " << a.v[2] << "]";
-        return os;
-    }
+    // Add methods for subtracting, multiplying and dividing with other vectors
+
+    // Add methods for addin, subtracting, multiplying and dividing with other doubles
 
 };
 
 inline vec3 operator+(vec3 lhs, vec3 rhs)
 {
+    // This allows c = a + b
     lhs += rhs;
     return lhs;
 }
