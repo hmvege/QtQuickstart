@@ -8,13 +8,13 @@ ForwardEuler::ForwardEuler()
 void ForwardEuler::integrate(System *system, const double h)
 {
     /*
-     * A basic forward Euler(or Euler Cromer to be precise)
+     * Forward Euler
      */
 
     for (CelestialBody *obj : system->bodies) {
 
-        obj->velocity += obj->force*h / obj->mass;
-
         obj->position += obj->velocity*h;
+
+        obj->velocity += obj->force*h / obj->mass;
     }
 }
