@@ -50,11 +50,10 @@ public:
     double length() const;
     double lengthSquared() const;
 
-    // Operator overloading
+    // Operator overloading for accessing by index, e.g. vector[i]
     double &operator[](int index) { return v[index]; }
 
-
-    // IMPLEMENT MORE OPERATORS HERE
+    // Implement your overloaded operators here!
     vec3 &operator+=(const vec3 &other);
     vec3 &operator-=(const vec3 &other);
 
@@ -93,5 +92,9 @@ inline vec3 operator/(vec3 lhs, double rhs)
     return lhs;
 }
 
+inline vec3 cross(const vec3 &a, const vec3 &b)
+{
+    return vec3(a.y()*b.z() - b.y()*a.z(), a.x()*b.z() - a.z()*b.x(), a.x()*b.y() - b.x()*a.y());
+}
 
 #endif // VEC3_H

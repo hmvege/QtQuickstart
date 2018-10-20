@@ -28,12 +28,32 @@ void NewtonianGravity::calculateForces(System *system)
             r = sqrt(r_temp.length());
 
             // Sets forces from object j on i
-            force_temp = r_temp / (r*r*r) * (-m_G) * (system->bodies[iObj]->mass * system->bodies[jObj]->mass / m_sunMass);
+            force_temp = r_temp / (r*r*r) * (-m_G) * system->bodies[iObj]->mass * system->bodies[jObj]->mass;
             system->bodies[iObj]->force += force_temp;
 
             // Uses N3L and sets forces from object i on j
             system->bodies[jObj]->force -= force_temp;
 
+        }
+    }
+}
+
+void NewtonianGravity::calculatePotential(System *system)
+{
+    // Temporary distance vector defined as r = |x_i - x_j|
+    vec3 distance = {0,0,0};
+
+    for (CelestialBody *iobj : system->bodies)
+    {
+        // Resets potential energy
+        iobj->potentialEnergy = 0;
+
+        // Sums up all of the potential energy contributions
+        for (CelestialBody *jobj : system->bodies)
+        {
+            if (iobj == jobj) continue;
+            distance = iobj->position - jobj->position;
+            iobj->potentialEnergy -= m_G * jobj->mass * iobj->mass / distance.length();
         }
     }
 }

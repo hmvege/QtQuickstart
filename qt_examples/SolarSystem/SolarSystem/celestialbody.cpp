@@ -12,6 +12,7 @@ CelestialBody::CelestialBody(vec3 newPosition, vec3 newVelocity, double newMass,
      * same as setting it to m_foo = foo in the function body.
      */
     force = {0,0,0};
+    angularMomentum = {0,0,0};
 }
 
 void CelestialBody::printObject()

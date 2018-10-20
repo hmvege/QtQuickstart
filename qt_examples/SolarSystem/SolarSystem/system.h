@@ -20,6 +20,7 @@ public:
 
     void addObject(CelestialBody* newBody) { bodies.push_back(newBody); }
 
+    void updateEnergies();
     void resetForces();
 };
 

@@ -9,11 +9,13 @@ SOURCES += \
     celestialbody.cpp \
     system.cpp \
     newtoniangravity.cpp \
-    forwardeuler.cpp
+    forwardeuler.cpp \
+    resultstorer.cpp \
 
 HEADERS += \
     vec3.h \
     celestialbody.h \
     system.h \
     newtoniangravity.h \
-    forwardeuler.h
+    forwardeuler.h \
+    resultstorer.h \
