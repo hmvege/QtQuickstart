@@ -358,9 +358,9 @@ The output will then on the shape of
 \subsubsection{Terminal}
 If you want to run in terminal, you might want to have your program compiled in debug mode(not required though), and type following 
 \begin{lstlisting}
-$ valgrind --leak_check=full ./my_executable
+$ valgrind --leak-check=full ./my_executable
 \end{lstlisting}
-The argument \verb|--leak_check=full| prompts Valgrind to output a detailed overview of the locations of where it detected memory leaks.
+The argument \verb|--leak-check=full| prompts Valgrind to output a detailed overview of the locations of where it detected memory leaks.
 
 Mac users: Valgrind may display many leaks which are related to the OS, and thus can be discarded.
 
@@ -395,6 +395,39 @@ By including \texttt{-march-native} you allow for processor specific compilation
 \texttt{-O3} you will allow get vectorization enabled, together with the optimizations from \texttt{-O2}, \texttt{-O1}, \texttt{-OFast}. 
 
 With \texttt{-fopt-info} you will see what compiler optimizations is performed.
+
+
+\section{Parallelization}
+There are two main roads to parallelize your code: either through \textit{MPI} or through \textit{OpenMP}. 
+\subsection{MPI}
+
+\subsubsection{Mac}
+To parallelize with MPI, make sure you have OpenMPI installed,
+\begin{lstlisting}
+$ brew install open-mpi
+\end{lstlisting}
+
+\subsubsection{Ubuntu}
+To install MPI, simply type,
+\begin{lstlisting}
+$ sudo apt install mpich
+\end{lstlisting}
+
+\subsection{OpenMP}
+\subsubsection{Mac}
+To parallelize with OpenMP on Mac\footnote{Discussion around how to make OpenMP run on Mac is covered in \href{https://stackoverflow.com/questions/39979836/using-openmp-with-c11-on-mac-os}{this} stackoverflow post}, ensure you have \texttt{libomp}, by using Brew.
+\begin{lstlisting}
+$ brew install lstlisting
+\end{lstlisting}
+Then, to compile in terminal, write
+\begin{lstlisting}
+$ g++ -Xpreprocessor -fopenmp -o <your-program>.o <your-program>.cpp -lomp
+\end{lstlisting}
+\subsubsection{Ubuntu}
+To install OpenMP on Ubuntu, simply type
+\begin{lstlisting}
+$ apt-get install libomp-dev
+\end{lstlisting}
 
 
 \end{document}
