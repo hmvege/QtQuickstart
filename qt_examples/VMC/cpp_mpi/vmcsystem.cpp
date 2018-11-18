@@ -33,7 +33,7 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
     double m_energy = 0;
     double m_energySquared = 0;
 
-    // Sets acceptance counter to zero
+    // Sets acceptance counter to zero for accepted configurations
     m_acceptanceCounter = 0;
 
     // Sets up RNGs

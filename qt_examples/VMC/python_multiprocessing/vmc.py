@@ -1,5 +1,5 @@
 import numpy as np
-from mpi4py import MPI
+import multiprocessing as mp
 import abc
 
 
@@ -59,12 +59,8 @@ class VMCSolver:
     def __init__(self, N_particles, N_dimensions, N_processors):
         self.N_particles = N_particles
         self.N_dimensions = N_dimensions
+        self.N_processors = N_processors
         self.r_shape = (self.N_particles, self.N_dimensions)
-
-        self.comm = MPI.COMM_WORLD
-        self.size = self.comm.Get_size()
-        self.rank = self.comm.Get_rank()
-
 
     def initialize(self):
         self.r_old = 2*np.random.rand(*self.r_shape) - 1
@@ -121,12 +117,12 @@ class VMCSolver:
         self.energy /= float(MCCycles)
         self.energy_squared /= float(MCCycles)
 
-        prec = 8 # Precision
+        prec = 8  # Precision
         print("Energy:           {:.{w}f}".format(self.energy, w=prec))
         print("Variance(Energy): {:.{w}f}".format(
-            (self.energy_squared - self.energy**2) / float(MCCycles), w=prec))
+            (self.energy_squared - self.energy**2)/float(MCCycles), w=prec))
         print("Acceptance ratio: {:.{w}f}".format(
-            self.acceptance_counter / float(self.N_particles*MCCycles), w=prec))
+            self.acceptance_counter/float(self.N_particles*MCCycles), w=prec))
 
 
 def main():
