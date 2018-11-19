@@ -12,10 +12,10 @@ Written for [FYS3150/4150: Computational Physics](https://github.com/CompPhysics
 ---
 
 TODO:
-- [ ] Add a basic shell solar system object orientation.
 - [ ] Add a basic setup of classes and their constructors.
 - [ ] Add a guide for parallelization with OpenMP.
 - [ ] Set up an example for parallelization with OpenMP.
 - [ ] Add a guide for parallelization with MPI.
 - [ ] Set up an example for parallelization with MPI.
 - [ ] Add a guide for basic compiler optimization.
+- [ ] Add VMC parallelization examples
