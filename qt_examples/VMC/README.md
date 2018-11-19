@@ -1,7 +1,5 @@
 # VMC
 
-------
-
 Here's different examples how you can perform VMC calculations. The examples found here also serves as examples to parallel processing.
 
 ## VMC in C++ with MPI
