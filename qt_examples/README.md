@@ -15,5 +15,8 @@ A basic yet fully fleshed out object oriented method for solving the solar syste
 **SolarSystemShell:**
 A shell code of the SolarSystem in which most of the relevant parts is taken out. _This_ is a good place to start in case you need to learn object orientation.
 
+**VMC**
+Basic code for running VMC in C++ and Python.
+
 **Usefull links and resources:**
 * [Whats the difference between heap and stack?](https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap)

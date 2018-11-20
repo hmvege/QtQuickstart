@@ -87,7 +87,7 @@ class VMCSolver:
             for iPart in range(self.N_particles):
 
                 self.r_new[iPart] = self.r_old[iPart] + \
-                    step_length*(2*np.random.rand(self.N_dimensions) - 1)
+                    step_length*np.random.uniform(-1, 1, (self.N_dimensions))
 
                 new_wf = self.wf(self.r_new)
 
@@ -125,7 +125,7 @@ def main():
     N_particles = 2
     N_dimensions = 3
     omega = 1.0
-    alpha_values = np.linspace(0.5, 1.5, 11)
+    alpha_values = np.linspace(0.8, 1.2, 5)
     MCCycles = int(1e4)
     step_length = 1.0
 

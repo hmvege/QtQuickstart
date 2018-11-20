@@ -83,7 +83,7 @@ class VMCSolver:
             for iPart in range(N_particles):
 
                 r_new[iPart] = r_old[iPart] + \
-                    step_length*(2*np.random.rand(N_dimensions) - 1)
+                    step_length*np.random.uniform(-1, 1, (N_dimensions))
 
                 new_wf = wavefunction(r_new)
 
@@ -169,7 +169,7 @@ def main():
     N_dimensions = 3
     omega = 1.0
     alpha_values = np.linspace(0.8, 1.2, 5)
-    MCCycles = int(1e5)
+    MCCycles = int(1e4)
     step_length = 1.0
 
     VMC = VMCSolver(N_particles, N_dimensions, numprocs)

@@ -157,12 +157,12 @@ class VMCSolver:
 
 
 def main():
-    N_processors = 2
+    N_processors = 4
     N_particles = 2
     N_dimensions = 3
     omega = 1.0
-    alpha_values = np.linspace(0.5, 1.5, 11)
-    MCCycles = int(1e5)
+    alpha_values = np.linspace(0.8, 1.2, 5)
+    MCCycles = int(1e4)
     step_length = 1.0
 
     VMC = VMCSolver(N_particles, N_dimensions, N_processors)

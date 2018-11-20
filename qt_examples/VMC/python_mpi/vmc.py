@@ -51,14 +51,14 @@ class TwoParticleNonInteractingWF(_BaseWaveFunction):
 
 
 class VMCSolver:
-    def __init__(self, N_particles, N_dimensions, N_processors):
+    def __init__(self, N_particles, N_dimensions, comm, numprocs, rank):
         self.N_particles = N_particles
         self.N_dimensions = N_dimensions
         self.r_shape = (self.N_particles, self.N_dimensions)
 
-        self.comm = MPI.COMM_WORLD
-        self.numprocs = self.comm.Get_size()
-        self.rank = self.comm.Get_rank()
+        self.comm = comm
+        self.numprocs = numprocs
+        self.rank = rank
 
     def initialize(self):
         self.r_old = 2*np.random.rand(*self.r_shape) - 1
@@ -67,6 +67,34 @@ class VMCSolver:
 
     def set_wavefunction(self, wf):
         self.wf = wf
+
+    # # TODO: implement numba here, similar to python_numba example.
+    # @staticmethod
+    # def update_particles(wf_wavefunction, wf_local_energy, old_wf, r_new,
+    #                      r_old, step_length, N_dimensions, N_particles,
+    #                      MCCycles, seed, wf_args):
+    #     for iPart in range(N_particles):
+
+    #         r_new[iPart] = r_old[iPart] + \
+    #             step_length*(np.random.uniform(-1, 1, (N_dimensions)))
+
+    #         new_wf = wf_wavefunction(r_new, wf_args)
+
+    #         ratio = new_wf**2 / old_wf**2
+
+    #         if np.random.uniform(0, 1) <= ratio:
+    #             old_wf = new_wf
+    #             r_old[iPart] = r_new[iPart]
+
+    #             acceptance_counter += 1
+    #         else:
+    #             new_wf = old_wf
+    #             r_new[iPart] = r_old[iPart]
+
+    #     # Should instead return kinetic and potential energy
+    #     local_energy = wf_local_energy(r_new, wf_args)
+
+    #     return old_wf, r_old, r_new, local_energy
 
     def run_vmc(self, MCCycles, step_length):
         """
@@ -94,13 +122,13 @@ class VMCSolver:
             for iPart in range(self.N_particles):
 
                 self.r_new[iPart] = self.r_old[iPart] + \
-                    step_length*(2*np.random.rand(self.N_dimensions) - 1)
+                    step_length*np.random.uniform(-1, 1, (self.N_dimensions))
 
                 new_wf = self.wf(self.r_new)
 
                 ratio = new_wf**2 / old_wf**2
 
-                if np.random.rand(1) <= ratio:
+                if np.random.uniform(0, 1, 1) <= ratio:
                     old_wf = new_wf
                     self.r_old[iPart] = self.r_new[iPart]
 
@@ -120,7 +148,7 @@ class VMCSolver:
         self.energy_squared = self.comm.allgather(self.energy_squared)
 
         self.energy = np.sum(self.energy) / MCCycles
-        self.energy_squared = np.sum(self.energy_squared) / MCCycles        
+        self.energy_squared = np.sum(self.energy_squared) / MCCycles
 
         prec = 8  # Precision
         if self.rank == 0:
@@ -134,21 +162,25 @@ class VMCSolver:
 
 
 def main():
-    N_processors = 2
     N_particles = 2
     N_dimensions = 3
     omega = 1.0
-    # alpha_values = np.linspace(0.8, 1.2, 5)
-    alpha_values = [1.0]
+    alpha_values = np.linspace(0.8, 1.2, 5)
+    # alpha_values = [1.0]
     MCCycles = int(1e4)
     step_length = 1.0
 
-    VMC = VMCSolver(N_particles, N_dimensions, N_processors)
+    comm = MPI.COMM_WORLD
+    numprocs = comm.Get_size()
+    rank = comm.Get_rank()
+
+    VMC = VMCSolver(N_particles, N_dimensions, comm, numprocs, rank)
     WF = TwoParticleNonInteractingWF(N_particles, N_dimensions, 1.0, 1.0)
     VMC.set_wavefunction(WF)
 
     for alpha in alpha_values:
-        print("\nAlpha:           ", alpha)
+        if rank == 0:
+            print("\nAlpha:           ", alpha)
         WF.alpha = alpha
         VMC.run_vmc(MCCycles, step_length)
 
