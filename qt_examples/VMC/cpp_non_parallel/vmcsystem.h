@@ -9,9 +9,6 @@ class VMCSystem
 private:
     int m_NParticles;
     int m_NDimensions;
-    int m_numprocs;
-    int m_rank;
-    int m_MCCycles;
     unsigned long long m_acceptanceCounter;
 
     // Wave functions
@@ -29,7 +26,7 @@ private:
     double m_energy = 0;
     double m_energySquared = 0;
 public:
-    VMCSystem(int NParticles, int NDimensions, int numprocs, int rank);
+    VMCSystem(int NParticles, int NDimensions);
 
     void setWaveFunction(WaveFunction * WF) { m_WF = WF; }
 

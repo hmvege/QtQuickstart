@@ -45,3 +45,7 @@ In the folder `cpp_openmp` there is a showcase of a VMC object-oriented python c
 Resources for Numba can be found at:
 * [Official Numba Tutorial](http://numba.pydata.org/numba-doc/0.12.2/tutorial_firststeps.html)
 * [Introduction to Jit from Computational Statistics at Duke University](http://people.duke.edu/~ccc14/sta-663-2016/18C_Numba.html#Pre-compilation-by-giving-specific-signature)
+
+
+### Future improvements
+[ ] Implement numba for multiprocessing and mpi4py as well, as that should dramatically boost the run-times.

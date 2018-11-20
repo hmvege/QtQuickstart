@@ -1,17 +1,13 @@
 #include "vmcsystem.h"
 #include <iostream>
 #include <iomanip>
-#include <cmath>
-#include <mpi.h>
 
 using std::cout;
 using std::endl;
 
-VMCSystem::VMCSystem(int NParticles, int NDimensions, int numprocs, int rank) :
+VMCSystem::VMCSystem(int NParticles, int NDimensions) :
     m_NParticles(NParticles),
-    m_NDimensions(NDimensions),
-    m_numprocs(numprocs),
-    m_rank(rank)
+    m_NDimensions(NDimensions)
 {
     m_newWaveFunction = 0;
     m_oldWaveFunction = 0;
@@ -34,14 +30,14 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
     double ratio = 0;
 
     double localEnergy = 0;
-    m_energy = 0;
-    m_energySquared = 0;
+    double m_energy = 0;
+    double m_energySquared = 0;
 
     // Sets acceptance counter to zero for accepted configurations
     m_acceptanceCounter = 0;
 
     // Sets up RNGs
-    std::mt19937_64 generator(1234 + m_rank);
+    std::mt19937_64 generator(1234);
     std::uniform_real_distribution<double> uniformDistribution(-1,1);
     std::uniform_real_distribution<double> acceptanceDistribution(0,1);
 
@@ -55,14 +51,11 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
         }
     }
 
-    // Splits MC cycles for all processors
-    m_MCCycles = int(round(MCCycles / m_numprocs));
-
     // Sets initial wave function
     m_oldWaveFunction = m_WF->calculate(m_rOld);
 
 
-    for (int cycle = 0; cycle < m_MCCycles; cycle++)
+    for (int cycle = 0; cycle < MCCycles; cycle++)
     {
 
         // Performs a Metropolis update on each particle
@@ -112,21 +105,11 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
         m_energySquared += (localEnergy*localEnergy);
 
     }
+    m_energy /= double(MCCycles);
+    m_energySquared /= double(MCCycles);
 
-    double tmpEnergy = 0;
-    double tmpEnergySquared = 0;
 
-    MPI_Allreduce(&m_energy, &tmpEnergy, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    MPI_Allreduce(&m_energySquared, &tmpEnergySquared, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-    tmpEnergy = m_energy;
-    tmpEnergySquared = m_energySquared;
-
-    m_energy /= double(m_MCCycles*m_numprocs);
-    m_energySquared /= double(m_MCCycles*m_numprocs);
-
-    if (m_rank==0) {
-        cout << std::setprecision(16) << "Energy:           " << m_energy << endl;
-        cout << std::setprecision(16) << "Variance(Energy): " << (m_energySquared - m_energy*m_energy) / double(m_MCCycles) << endl;
-        cout << std::setprecision(16) << "Acceptance ratio: " << m_acceptanceCounter / double(m_NParticles*m_MCCycles) << endl;
-    }
+    cout << std::setprecision(16) << "Energy:           " << m_energy << endl;
+    cout << std::setprecision(16) << "Variance(Energy): " << (m_energySquared - m_energy*m_energy) / double(MCCycles) << endl;
+    cout << std::setprecision(16) << "Acceptance ratio: " << m_acceptanceCounter / double(m_NParticles*MCCycles) << endl;
 }

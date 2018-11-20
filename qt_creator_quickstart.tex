@@ -413,6 +413,45 @@ To install MPI, simply type,
 $ sudo apt install mpich
 \end{lstlisting}
 
+\subsubsection{Setting up MPI for QtCreator}
+The first thing you need to do is to include MPI in the \texttt{.pro}-file as given \href{https://dragly.org/2012/03/14/developing-mpi-applications-in-qt-creator/}{here},
+\begin{lstlisting}{c++}
+# MPI Settings
+QMAKE_CXX = mpicxx
+QMAKE_CXX_RELEASE = $$QMAKE_CXX
+QMAKE_CXX_DEBUG = $$QMAKE_CXX
+QMAKE_LINK = $$QMAKE_CXX
+QMAKE_CC = mpicc
+
+QMAKE_CFLAGS += $$system(mpicc --showme:compile)
+QMAKE_LFLAGS += $$system(mpicxx --showme:link)
+QMAKE_CXXFLAGS += $$system(mpicxx --showme:compile) -DMPICH_IGNORE_CXX_SEEK
+QMAKE_CXXFLAGS_RELEASE += $$system(mpicxx --showme:compile) -DMPICH_IGNORE_CXX_SEEK
+\end{lstlisting}
+
+After the QMake incantations has been invoked, it is time to set the correct parameters for Qt Creator. Go to your \textit{build}-panel. There, if you are on Mac you will need to add the following line under the \textit{Build Environment} section and in \texttt{PATH},
+\begin{lstlisting}
+/usr/local/bin
+\end{lstlisting}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/mpi/mpi_build_envoirement.png}
+\end{figure}
+
+After that is done, you can move on to the run settings. There, you will need to add a new \textit{Run configuration}. Click \textit{Add} and select \textit{Custom Executable}. By doing \texttt{which mpirun} in the terminal, you can type in the following,
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/mpi/mpi_run_settings.png}
+\end{figure}
+
+To use this custom executable, select the newly created \textit{mpi} from the \textit{Run Selection Menu} as seen in following figure,
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/mpi/qt_run_selection.png}
+\end{figure}
+
+
+
 \subsection{OpenMP}
 \subsubsection{Mac}
 To parallelize with OpenMP on Mac\footnote{Discussion around how to make OpenMP run on Mac is covered in \href{https://stackoverflow.com/questions/39979836/using-openmp-with-c11-on-mac-os}{this} stackoverflow post}, ensure you have \texttt{libomp}, by using Brew.
@@ -429,5 +468,23 @@ To install OpenMP on Ubuntu, simply type
 $ apt-get install libomp-dev
 \end{lstlisting}
 
+\subsection{Troubleshooting MPI}
+\subsubsection{Orte Communications}
+Simple set the \texttt{tmp} path in Run Settings to \texttt{\\tmp} as seen in following figure,
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/mpi/mpi_run_envoirement.png}
+\end{figure}
+
+
+\subsubsection{Failed to start program}
+If you get the following error message,
+\begin{lstlisting}
+15:51:07: Starting /usr/local/bin/mpirun...
+15:51:07: Failed to start program. Path or permissions wrong?
+15:51:07: /usr/local/bin/mpirun exited with code -1
+15:51:07: The process failed to start. Either the invoked program "/usr/local/bin/mpirun" is missing, or you may have insufficient permissions to invoke the program.
+\end{lstlisting}
+you probable 
 
 \end{document}
