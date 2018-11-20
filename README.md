@@ -13,7 +13,7 @@ Written for [FYS3150/4150: Computational Physics](https://github.com/CompPhysics
 ---
 
 TODO:
-- [ ] Add a guide for parallelization with OpenMP(getting OpenMP to work in QtCreator is nigh impossible for the moment being).
+- [ ] Add a guide for parallelization with OpenMP(OpenMP is compiling, but the setup is wrong).
 - [ ] Set up an example for parallelization with OpenMP.
 - [ ] Rule of 5 class constructor examples
 - [x] Add a guide for parallelization with MPI.

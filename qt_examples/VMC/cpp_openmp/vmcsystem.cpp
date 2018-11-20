@@ -58,7 +58,7 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
     // Sets initial wave function
     m_oldWaveFunction = m_WF->calculate(m_rOld);
 
-//    # pragma omp parallel for default(shared) private(m_rNew, m_rOld, m_newWaveFunction, m_oldWaveFunction) reduction(+:m_energy, m_energySquared, m_acceptanceCounter)
+# pragma omp parallel for default(shared) private(m_rNew, m_rOld, m_newWaveFunction, m_oldWaveFunction) reduction(+:m_energy, m_energySquared, m_acceptanceCounter)
     for (int cycle = 0; cycle < m_MCCycles; cycle++)
     {
 
