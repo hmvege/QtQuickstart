@@ -2,16 +2,13 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include <mpi.h>
 
 using std::cout;
 using std::endl;
 
-VMCSystem::VMCSystem(int NParticles, int NDimensions, int numprocs, int rank) :
+VMCSystem::VMCSystem(int NParticles, int NDimensions) :
     m_NParticles(NParticles),
-    m_NDimensions(NDimensions),
-    m_numprocs(numprocs),
-    m_rank(rank)
+    m_NDimensions(NDimensions)
 {
     m_newWaveFunction = 0;
     m_oldWaveFunction = 0;
@@ -41,7 +38,7 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
     m_acceptanceCounter = 0;
 
     // Sets up RNGs
-    std::mt19937_64 generator(1234 + m_rank);
+    std::mt19937_64 generator(1234);
     std::uniform_real_distribution<double> uniformDistribution(-1,1);
     std::uniform_real_distribution<double> acceptanceDistribution(0,1);
 
@@ -56,11 +53,12 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
     }
 
     // Splits MC cycles for all processors
-    m_MCCycles = MCCycles / m_numprocs;
+    m_MCCycles = MCCycles;
 
     // Sets initial wave function
     m_oldWaveFunction = m_WF->calculate(m_rOld);
 
+//    # pragma omp parallel for default(shared) private(m_rNew, m_rOld, m_newWaveFunction, m_oldWaveFunction) reduction(+:m_energy, m_energySquared, m_acceptanceCounter)
     for (int cycle = 0; cycle < m_MCCycles; cycle++)
     {
 
@@ -112,20 +110,10 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
 
     }
 
-    double tmpEnergy = 0;
-    double tmpEnergySquared = 0;
+    m_energy  /= double(m_MCCycles);
+    m_energySquared /= double(m_MCCycles);
 
-    MPI_Reduce(&m_energy, &tmpEnergy, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&m_energySquared, &tmpEnergySquared, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    m_energy = tmpEnergy / double(m_MCCycles*m_numprocs);
-    m_energySquared = tmpEnergySquared / double(m_MCCycles*m_numprocs);
-
-//    cout << m_MCCycles*m_numprocs << endl;
-
-    if (m_rank==0) {
-        cout << std::setprecision(16) << "Energy:           " << m_energy << endl;
-        cout << std::setprecision(16) << "Variance(Energy): " << (m_energySquared - m_energy*m_energy) / double(m_MCCycles) << endl;
-        cout << std::setprecision(16) << "Acceptance ratio: " << m_acceptanceCounter / double(m_NParticles*m_MCCycles) << endl;
-    }
+    cout << std::setprecision(16) << "Energy:           " << m_energy << endl;
+    cout << std::setprecision(16) << "Variance(Energy): " << (m_energySquared - m_energy*m_energy) / double(m_MCCycles) << endl;
+    cout << std::setprecision(16) << "Acceptance ratio: " << m_acceptanceCounter / double(m_NParticles*m_MCCycles) << endl;
 }

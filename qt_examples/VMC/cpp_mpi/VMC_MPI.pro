@@ -20,10 +20,18 @@ LIBS += -L/usr/local/lib -larmadillo
 INCLUDEPATH += /usr/local/include
 
 
+# Adds O3 optimizations
 QMAKE_CFLAGS += -O3
 QMAKE_LFLAGS += -O3
 QMAKE_CXXFLAGS += -O3
 QMAKE_CXXFLAGS_RELEASE += -O3
+
+# Adds processor specific optimizations
+QMAKE_CFLAGS += -march=native
+QMAKE_LFLAGS += -march=native
+QMAKE_CXXFLAGS += -march=native
+QMAKE_CXXFLAGS_RELEASE += -march=native
+
 
 
 # MPI Settings
