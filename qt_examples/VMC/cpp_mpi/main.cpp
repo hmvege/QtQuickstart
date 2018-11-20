@@ -10,14 +10,14 @@ int main()
     int NDimensions = 3;
     double omega = 1.0;
 
-    int MCCycles = 100000;
+    int MCCycles = 10000;
     double stepLength = 1.0; // This gives around 50% in acceptance ratio
 
     VMCSystem VMC(NParticles, NDimensions);
     TwoParticleNonInteractingWF WF(NParticles, NDimensions);
     VMC.setWaveFunction(&WF);
 
-    for (double alpha = 0.25; alpha < 2.0; alpha+=0.05)
+    for (double alpha = 0.8; alpha < 1.2; alpha+=0.05)
     {
         printf("\nALPHA = %.2f\n", alpha);
         WF.setParameters(omega, alpha);

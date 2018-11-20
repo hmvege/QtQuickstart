@@ -1,6 +1,8 @@
 import numpy as np
-from mpi4py import MPI
 import abc
+import time
+
+from mpi4py import MPI
 
 
 class _BaseWaveFunction:
@@ -38,18 +40,11 @@ class TwoParticleNonInteractingWF(_BaseWaveFunction):
     def __call__(self, r):
         """Returns wavefunctions.
         Takes positions matrix r."""
-        r_squared = 0
-        for iPart in range(self.N_particles):
-            for iDim in range(self.N_dimensions):
-                r_squared += r[iPart, iDim]**2
+        r_squared = np.sum(r**2)
         return np.exp(- 0.5 * self.omega * self.alpha * r_squared)
 
     def local_energy(self, r):
-        r_squared = 0
-        for iPart in range(self.N_particles):
-            for iDim in range(self.N_dimensions):
-                r_squared += r[iPart, iDim]**2
-
+        r_squared = np.sum(r**2)
         ret_value = 0.5*self.omega**2*r_squared*(1-self.alpha**2)
         ret_value += 3*self.alpha*self.omega
         return ret_value
@@ -62,7 +57,7 @@ class VMCSolver:
         self.r_shape = (self.N_particles, self.N_dimensions)
 
         self.comm = MPI.COMM_WORLD
-        self.size = self.comm.Get_size()
+        self.numprocs = self.comm.Get_size()
         self.rank = self.comm.Get_rank()
 
     def initialize(self):
@@ -92,7 +87,9 @@ class VMCSolver:
 
         old_wf = self.wf(self.r_old)
 
-        for cycle in range(MCCycles):
+        t0 = time.time()
+
+        for cycle in range(int(MCCycles/self.numprocs)):
 
             for iPart in range(self.N_particles):
 
@@ -117,24 +114,33 @@ class VMCSolver:
             self.energy += local_energy
             self.energy_squared += local_energy**2
 
-        self.energy /= float(MCCycles)
-        self.energy_squared /= float(MCCycles)
+        t1 = time.time()
 
-        prec = 8 # Precision
-        print("Energy:           {:.{w}f}".format(self.energy, w=prec))
-        print("Variance(Energy): {:.{w}f}".format(
-            (self.energy_squared - self.energy**2) / float(MCCycles), w=prec))
-        print("Acceptance ratio: {:.{w}f}".format(
-            self.acceptance_counter / float(self.N_particles*MCCycles), w=prec))
+        self.energy = self.comm.allgather(self.energy)
+        self.energy_squared = self.comm.allgather(self.energy_squared)
+
+        self.energy = np.sum(self.energy) / MCCycles
+        self.energy_squared = np.sum(self.energy_squared) / MCCycles        
+
+        prec = 8  # Precision
+        if self.rank == 0:
+            print("Energy:           {:.{w}f}".format(self.energy, w=prec))
+            print("Variance(Energy): {:.{w}f}".format(
+                (self.energy_squared - self.energy**2) / MCCycles, w=prec))
+            print("Acceptance ratio: {:.{w}f}".format(
+                self.acceptance_counter/float(self.N_particles*MCCycles),
+                w=prec))
+            print("Time used:        {:.4f}".format(t1-t0))
 
 
 def main():
     N_processors = 2
     N_particles = 2
-    N_dimensions = 2
+    N_dimensions = 3
     omega = 1.0
-    alpha_values = np.linspace(0.5, 1.5, 11)
-    MCCycles = int(1e3)
+    # alpha_values = np.linspace(0.8, 1.2, 5)
+    alpha_values = [1.0]
+    MCCycles = int(1e4)
     step_length = 1.0
 
     VMC = VMCSolver(N_particles, N_dimensions, N_processors)

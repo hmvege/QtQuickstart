@@ -1,6 +1,9 @@
 import numpy as np
-import multiprocessing as mp
 import abc
+import time
+import copy as cp
+
+import multiprocessing as mp
 
 
 class _BaseWaveFunction:
@@ -38,28 +41,21 @@ class TwoParticleNonInteractingWF(_BaseWaveFunction):
     def __call__(self, r):
         """Returns wavefunctions.
         Takes positions matrix r."""
-        r_squared = 0
-        for iPart in range(self.N_particles):
-            for iDim in range(self.N_dimensions):
-                r_squared += r[iPart, iDim]**2
+        r_squared = np.sum(r**2)
         return np.exp(- 0.5 * self.omega * self.alpha * r_squared)
 
     def local_energy(self, r):
-        r_squared = 0
-        for iPart in range(self.N_particles):
-            for iDim in range(self.N_dimensions):
-                r_squared += r[iPart, iDim]**2
-
+        r_squared = np.sum(r**2)
         ret_value = 0.5*self.omega**2*r_squared*(1-self.alpha**2)
         ret_value += 3*self.alpha*self.omega
         return ret_value
 
 
 class VMCSolver:
-    def __init__(self, N_particles, N_dimensions, N_processors):
+    def __init__(self, N_particles, N_dimensions, numprocs=0):
         self.N_particles = N_particles
         self.N_dimensions = N_dimensions
-        self.N_processors = N_processors
+        self.numprocs = numprocs
         self.r_shape = (self.N_particles, self.N_dimensions)
 
     def initialize(self):
@@ -69,6 +65,45 @@ class VMCSolver:
 
     def set_wavefunction(self, wf):
         self.wf = wf
+
+    @staticmethod
+    def run_metropolis(input_values):
+        [wavefunction, r_new, r_old, step_length,
+         N_dimensions, N_particles, MCCycles, seed] = input_values
+        acceptance_counter = 0
+
+        np.random.seed(seed)
+
+        energy = 0
+        energy_squared = 0
+
+        old_wf = wavefunction(r_old)
+
+        for cycle in range(MCCycles):
+            for iPart in range(N_particles):
+
+                r_new[iPart] = r_old[iPart] + \
+                    step_length*(2*np.random.rand(N_dimensions) - 1)
+
+                new_wf = wavefunction(r_new)
+
+                ratio = new_wf**2 / old_wf**2
+
+                if np.random.uniform(0,1) <= ratio:
+                    old_wf = new_wf
+                    r_old[iPart] = r_new[iPart]
+
+                    acceptance_counter += 1
+                else:
+                    new_wf = old_wf
+                    r_new[iPart] = r_old[iPart]
+
+            # Should instead return kinetic and potential energy
+            local_energy = wavefunction.local_energy(r_new)
+            energy += local_energy
+            energy_squared += local_energy**2
+
+        return energy, energy_squared, acceptance_counter
 
     def run_vmc(self, MCCycles, step_length):
         """
@@ -87,54 +122,57 @@ class VMCSolver:
         # Sets initial default positions
         self.initialize()
 
-        old_wf = self.wf(self.r_old)
+        t0 = time.time()
 
-        for cycle in range(MCCycles):
+        if self.numprocs != 0:
+            with mp.Pool(processes=self.numprocs) as p:
+                # Sets up input values.
+                input_values = zip(
+                    [self.wf for i in range(self.numprocs)],
+                    [self.r_new for i in range(self.numprocs)],
+                    [self.r_old for i in range(self.numprocs)],
+                    [step_length for i in range(self.numprocs)],
+                    [self.N_dimensions for i in range(self.numprocs)],
+                    [self.N_particles for i in range(self.numprocs)],
+                    [int(MCCycles / self.numprocs)
+                        for i in range(self.numprocs)],
+                    # Ensures each processor has a different seed.
+                    list(range(self.numprocs)))
+                results = p.map(self.run_metropolis, input_values)
 
-            for iPart in range(self.N_particles):
+                self.energy = np.sum([r[0] for r in results])
+                self.energy_squared = np.sum([r[1] for r in results])
+                self.acceptance_counter = np.sum([r[2] for r in results])
+        else:
+            self.energy, self.energy_squared, self.acceptance_counter = \
+                self.run_metropolis([self.wf, self.r_new, self.r_old, step_length,
+                             self.N_dimensions, self.N_particles, MCCycles,
+                             0]) 
 
-                self.r_new[iPart] = self.r_old[iPart] + \
-                    step_length*(2*np.random.rand(self.N_dimensions) - 1)
+        t1 = time.time()
 
-                new_wf = self.wf(self.r_new)
-
-                ratio = new_wf**2 / old_wf**2
-
-                if np.random.rand(1) <= ratio:
-                    old_wf = new_wf
-                    self.r_old[iPart] = self.r_new[iPart]
-
-                    self.acceptance_counter += 1
-                else:
-                    new_wf = old_wf
-                    self.r_new[iPart] = self.r_old[iPart]
-
-            # Should instead return kinetic and potential energy
-            local_energy = self.wf.local_energy(self.r_new)
-            self.energy += local_energy
-            self.energy_squared += local_energy**2
-
-        self.energy /= float(MCCycles)
-        self.energy_squared /= float(MCCycles)
+        self.energy /= MCCycles
+        self.energy_squared /= MCCycles
 
         prec = 8  # Precision
         print("Energy:           {:.{w}f}".format(self.energy, w=prec))
         print("Variance(Energy): {:.{w}f}".format(
-            (self.energy_squared - self.energy**2)/float(MCCycles), w=prec))
+            (self.energy_squared - self.energy**2)/MCCycles, w=prec))
         print("Acceptance ratio: {:.{w}f}".format(
             self.acceptance_counter/float(self.N_particles*MCCycles), w=prec))
+        print("Time used:        {:.4f}".format(t1-t0))
 
 
 def main():
-    N_processors = 2
+    numprocs = 4
     N_particles = 2
-    N_dimensions = 2
+    N_dimensions = 3
     omega = 1.0
-    alpha_values = np.linspace(0.5, 1.5, 11)
-    MCCycles = int(1e3)
+    alpha_values = np.linspace(0.8, 1.2, 5)
+    MCCycles = int(1e5)
     step_length = 1.0
 
-    VMC = VMCSolver(N_particles, N_dimensions, N_processors)
+    VMC = VMCSolver(N_particles, N_dimensions, numprocs)
     WF = TwoParticleNonInteractingWF(N_particles, N_dimensions, 1.0, 1.0)
     VMC.set_wavefunction(WF)
 
