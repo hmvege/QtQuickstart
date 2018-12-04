@@ -138,6 +138,8 @@ class VMCSolver:
                         for i in range(self.numprocs)],
                     # Ensures each processor has a different seed.
                     list(range(self.numprocs)))
+
+                # Lets multiprocessing handle the parallelization
                 results = p.map(self.run_metropolis, input_values)
 
                 self.energy = np.sum([r[0] for r in results])

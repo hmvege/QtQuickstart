@@ -48,4 +48,4 @@ Resources for Numba can be found at:
 
 
 ### Future improvements
-[ ] Implement numba for multiprocessing and mpi4py as well, as that should dramatically boost the run-times.
+- [ ] Implement numba for multiprocessing and mpi4py as well, as that should dramatically boost the run-times.

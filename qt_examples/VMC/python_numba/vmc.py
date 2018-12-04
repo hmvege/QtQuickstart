@@ -40,7 +40,7 @@ class TwoParticleNonInteractingWF(_BaseWaveFunction):
         self.omega = omega
 
     @staticmethod
-    @nb.jit(nopython=True)
+    @nb.jit(nopython=True, cache=True)
     def wavefunction(r, args):
         """Returns wavefunctions.
         Takes positions matrix r."""
@@ -49,7 +49,7 @@ class TwoParticleNonInteractingWF(_BaseWaveFunction):
         return np.exp(- 0.5 * omega * alpha * r_squared)
 
     @staticmethod
-    @nb.jit(nopython=True)
+    @nb.jit(nopython=True, cache=True)
     def local_energy(r, args):
         omega, alpha = args
         r_squared = np.sum(r**2)
@@ -73,7 +73,7 @@ class VMCSolver:
         self.wf = wf
 
     @staticmethod
-    @nb.njit(parallel=False)
+    @nb.njit(parallel=False) # Can't cache weak refs
     def run_metropolis(wf_wavefunction, wf_local_energy, r_new, r_old,
                        step_length, N_dimensions, N_particles, MCCycles, 
                        seed, wf_args):
