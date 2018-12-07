@@ -16,7 +16,7 @@ build*
 # Latexrun
 latex.out
 latexrun
-*pro.user
+*pro.user*
 *.fdb_latexmk
 *.synctex.gz
 .DS_Store

@@ -17,7 +17,8 @@ TODO:
 - [ ] Set up an example for parallelization with OpenMP.
 - [ ] Rule of 5 class constructor examples.
 - [ ] Add some notes on makefiles.
-- [ ] Add smoe notes on cmake.
+- [ ] Add some notes on cmake.
+- [ ] Add some notes on git.
 - [x] Add a guide for parallelization with MPI.
 - [x] Add a basic setup of classes and their constructors.
 - [x] Set up an example for parallelization with MPI.
