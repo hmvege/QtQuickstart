@@ -16,8 +16,8 @@ TODO:
 - [ ] Add a guide for parallelization with OpenMP(OpenMP is compiling, but the setup is wrong).
 - [ ] Set up an example for parallelization with OpenMP.
 - [ ] Rule of 5 class constructor examples.
-- [ ] Add some notes on makefiles.
-- [ ] Add some notes on cmake.
+- [ ] Add some notes on makefiles(add make files for all Qt projects).
+- [ ] Add some notes on cmake(add cmake files for all Qt projects).
 - [ ] Add some notes on git.
 - [x] Add a guide for parallelization with MPI.
 - [x] Add a basic setup of classes and their constructors.
