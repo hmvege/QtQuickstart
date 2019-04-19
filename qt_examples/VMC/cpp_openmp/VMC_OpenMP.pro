@@ -16,6 +16,17 @@ HEADERS += \
     wavefunctions/helium.h \
     wavefunctions/twoparticlenoninteractingwf.h
 
+#CONFIG += \
+#    vmcsystem.h \
+#    wavefunctions/wavefunction.h \
+#    wavefunctions/helium.h \
+#    wavefunctions/twoparticlenoninteractingwf.h
+#PRECOMPILED_HEADER += \
+#    vmcsystem.h \
+#    wavefunctions/wavefunction.h \
+#    wavefunctions/helium.h \
+#    wavefunctions/twoparticlenoninteractingwf.h
+
 LIBS += -L/usr/local/lib -larmadillo
 INCLUDEPATH += /usr/local/include
 

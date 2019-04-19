@@ -12,8 +12,8 @@ public:
     WaveFunction(int NParticles, int NDimensions);
     virtual ~WaveFunction();
 
-    virtual double calculate(const arma::Mat<double> &rPos);
-    virtual double localEnergy(const arma::Mat<double> &rPos);
+    virtual double calculate(const arma::Mat<double> &rPos) = 0;
+    virtual double localEnergy(const arma::Mat<double> &rPos) = 0;
 };
 
 #endif // WAVEFUNCTION_H
