@@ -51,7 +51,7 @@ int main()
     A = A + B;
 
     // This should trigger a copy assignement operation
-//    C = A;
+    C = A;
 
     cout << "Finalizing move-sem. operations" << endl;
 

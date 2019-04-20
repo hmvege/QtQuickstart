@@ -10,6 +10,7 @@ private:
     int m_NParticles;
     int m_NDimensions;
     int m_MCCycles;
+    int m_numprocs = 1;
     unsigned long long m_acceptanceCounter;
 
     // Wave functions

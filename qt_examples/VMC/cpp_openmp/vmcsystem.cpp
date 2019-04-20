@@ -10,6 +10,7 @@ VMCSystem::VMCSystem(int NParticles, int NDimensions) :
     m_NParticles(NParticles),
     m_NDimensions(NDimensions)
 {
+//#pragma omp parallel private(m_rNew, m_rOld, m_newWaveFunction, m_oldWaveFunction)
     m_newWaveFunction = 0;
     m_oldWaveFunction = 0;
 
@@ -18,6 +19,8 @@ VMCSystem::VMCSystem(int NParticles, int NDimensions) :
 
     m_rNew.zeros();
     m_rOld.zeros();
+
+    m_numprocs = omp_get_num_procs();
 }
 
 
@@ -58,8 +61,25 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
     // Sets initial wave function
     m_oldWaveFunction = m_WF->calculate(m_rOld);
 
-# pragma omp parallel for default(shared) private(m_rNew, m_rOld, m_newWaveFunction, m_oldWaveFunction) reduction(+:m_energy, m_energySquared, m_acceptanceCounter)
-    for (int cycle = 0; cycle < m_MCCycles; cycle++)
+    // Splits MC cycles for all processors
+    m_MCCycles = int(double(MCCycles) / double(m_numprocs));
+
+    int cycle;
+
+#pragma omp parallel private(m_rNew, m_rOld, m_newWaveFunction, m_oldWaveFunction)
+//# pragma omp parallel for default(shared) private(cycle) reduction(+:m_energy, m_energySquared, m_acceptanceCounter)
+// # pragma omp parallel copyin(m_rNew, m_rOld, m_newWaveFunction, m_oldWaveFunction)
+//# pragma omp parallel for default(shared) private(cycle, m_rNew, m_rOld, m_newWaveFunction, m_oldWaveFunction) reduction(+:m_energy, m_energySquared, m_acceptanceCounter)
+   {
+       m_rNew.resize(m_NParticles, m_NDimensions);
+       m_rOld.resize(m_NParticles, m_NDimensions);
+
+       m_rNew.zeros();
+       m_rOld.zeros();
+
+
+# pragma omp parallel for default(shared) private(cycle) reduction(+:m_energy, m_energySquared, m_acceptanceCounter)
+    for (cycle = 0; cycle < m_MCCycles; cycle++)
     {
 
         // Performs a Metropolis update on each particle
@@ -109,9 +129,10 @@ void VMCSystem::runVMC(int MCCycles, double stepLength)
         m_energySquared += (localEnergy*localEnergy);
 
     }
+   }
 
-    m_energy  /= double(m_MCCycles);
-    m_energySquared /= double(m_MCCycles);
+    m_energy  /= double(m_MCCycles*m_numprocs);
+    m_energySquared /= double(m_MCCycles*m_numprocs);
 
     cout << std::setprecision(16) << "Energy:           " << m_energy << endl;
     cout << std::setprecision(16) << "Variance(Energy): " << (m_energySquared - m_energy*m_energy) / double(m_MCCycles) << endl;

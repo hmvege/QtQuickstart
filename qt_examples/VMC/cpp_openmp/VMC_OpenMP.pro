@@ -38,13 +38,13 @@ INCLUDEPATH += /usr/local/include
 QMAKE_CFLAGS += -O3
 QMAKE_LFLAGS += -O3
 QMAKE_CXXFLAGS += -O3
-#QMAKE_CXXFLAGS_RELEASE += -O3
+QMAKE_CXXFLAGS_RELEASE += -O3
 
 # Adds processor specific optimizations
 QMAKE_CFLAGS += -march=native
 QMAKE_LFLAGS += -march=native
 QMAKE_CXXFLAGS += -march=native
-#QMAKE_CXXFLAGS_RELEASE += -march=native
+QMAKE_CXXFLAGS_RELEASE += -march=native
 
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CFLAGS += -std=c++11
